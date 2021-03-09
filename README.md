@@ -1,4 +1,4 @@
-# Generazione dinamica della UI con Blazor WebAsse,by - WebDay 2021
+# Generazione dinamica della UI con Blazor WebAssembly - WebDay 2021
 
 Codice della sessione Generazione dinamica della UI con Blazor WebAssembly tenuta al WebDay 2021.
 
