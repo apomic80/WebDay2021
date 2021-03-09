@@ -1,0 +1,44 @@
+﻿@page "/fetchdata"
+@using webday2021.Shared
+@inject HttpClient Http
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @if(currentItem == null)
+    {
+        <Grid Items="forecasts" OnEdit="(WeatherForecast item) => Edit(item)"></Grid>
+    }
+    else
+    {
+        <Details Item="currentItem" OnGoBack="Back"></Details>
+    }
+}
+
+@code {
+    private List<WeatherForecast> forecasts;
+    private WeatherForecast currentItem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<List<WeatherForecast>>("WeatherForecast");
+    }
+
+    private void Edit(WeatherForecast item)
+    {
+        currentItem = item;
+    }
+
+    private void Back()
+    {
+        currentItem = null;
+    }
+
+}

@@ -1,0 +1,36 @@
+@typeparam GridItem
+<table class="table">
+    <thead>
+        <tr>
+            @foreach (var prop in properties)
+            {
+                var display = prop.GetCustomAttribute<DisplayAttribute>();
+                <th>@(display == null ? prop.Name : display.Name)</th>
+            }
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Items)
+        {
+            <tr>
+                @foreach (var prop in properties)
+                {
+                    var value = prop.GetValue(item);
+                    var displayFormat = prop.GetCustomAttribute<DisplayFormatAttribute>();
+                    <td>@(displayFormat == null ? value : string.Format(displayFormat.DataFormatString, value))</td>
+                }
+                <td>
+                    <button class="btn btn-warning" @onclick="() => OnEdit.InvokeAsync(item)">Edit</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter] public List<GridItem> Items { get; set;}
+    [Parameter] public EventCallback<GridItem> OnEdit { get; set; }
+
+    private PropertyInfo[] properties = typeof(GridItem).GetProperties();
+}

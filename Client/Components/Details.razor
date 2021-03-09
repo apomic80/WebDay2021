@@ -1,0 +1,74 @@
+@typeparam ItemType
+<h2>Details</h2>
+
+<EditForm Model="Item">
+    <DataAnnotationsValidator />
+    @foreach (var prop in properties)
+    {
+        if(prop.CanWrite)
+        {
+            var value = prop.GetValue(Item);
+            var display = prop.GetCustomAttribute<DisplayAttribute>();
+            
+            // () => Model.TemperatureC
+            var memberExpression = Expression.Constant(Item);
+            var propertyExpression = Expression.Property(memberExpression, prop.Name);
+
+            <div class="form-group">
+                <label>@(display == null ? prop.Name : display.Name)</label>
+
+                @switch (value)
+                {
+                    case int number:
+                    {
+                        var expression = Expression.Lambda<Func<int>>(propertyExpression);
+                        <InputNumber 
+                            TValue="int"
+                            Value="number"
+                            ValueChanged="newValue => prop.SetValue(Item, newValue)"
+                            ValueExpression="expression"
+                            class="form-control" />
+                        <ValidationMessage For="expression" />
+                    } break;
+
+                    case DateTime date:
+                    {
+                        var expression = Expression.Lambda<Func<DateTime>>(propertyExpression);
+                        <InputDate
+                            TValue="DateTime"
+                            Value="date"
+                            ValueChanged="newValue => prop.SetValue(Item, newValue)"
+                            ValueExpression="expression"
+                            class="form-control" />
+                        <ValidationMessage For="expression" />
+                    } break;
+
+                    case string text:
+                    {
+                        var expression = Expression.Lambda<Func<string>>(propertyExpression);
+                        <InputText
+                            TValue="string"
+                            Value="@text"
+                            ValueChanged="newValue => prop.SetValue(Item, newValue)"
+                            ValueExpression="expression"
+                            class="form-control" />
+                        <ValidationMessage For="expression" />
+                    } break;
+                    
+                }
+
+            </div>
+
+        }
+    }
+
+    <button type="button" class="btn btn-primary" @onclick="OnGoBack">Go back</button>
+</EditForm>
+
+@code {
+
+    [Parameter] public ItemType Item { get; set; }
+    [Parameter] public EventCallback OnGoBack { get; set; }
+
+    private PropertyInfo[] properties = typeof(ItemType).GetProperties();
+}
